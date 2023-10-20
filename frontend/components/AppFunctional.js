@@ -5,52 +5,81 @@ const initialMessage = ''
 const initialEmail = ''
 const initialSteps = 0
 const initialIndex = 4
- //  "B" nin bulunduğu indexi
 
 export default function AppFunctional(props) {
-  // AŞAĞIDAKİ HELPERLAR SADECE ÖNERİDİR.
-  // Bunları silip kendi mantığınızla sıfırdan geliştirebilirsiniz.
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
   const [steps, setSteps] = useState(initialSteps)
+  const [message, setMessage] = useState(initialMessage)
 
-  function getXY() {
-    // Koordinatları izlemek için bir state e sahip olmak gerekli değildir.
-    // Bunları hesaplayabilmek için "B" nin hangi indexte olduğunu bilmek yeterlidir.
-    
+  function getXY(paramCurrentIndex) {
+    let x = "";
+    let y = "";
+    if(paramCurrentIndex === 0 || paramCurrentIndex === 1 || paramCurrentIndex === 2){
+      x = "1";
+    }else if(paramCurrentIndex === 3 || paramCurrentIndex === 4 || paramCurrentIndex === 5){
+      x = "2";
+    }else if(paramCurrentIndex === 6 || paramCurrentIndex === 7 || paramCurrentIndex === 8){
+      x = "3";
+    }
+    if(paramCurrentIndex === 0 || paramCurrentIndex === 3 || paramCurrentIndex === 6){
+      y = "1";
+    }else if(paramCurrentIndex === 1 || paramCurrentIndex === 4 || paramCurrentIndex === 7){
+      y = "2";
+    }else if(paramCurrentIndex === 2 || paramCurrentIndex === 5 || paramCurrentIndex === 8){
+      y = "3";
+    }
+    return `${x}, ${y}`
   }
 
-  function getXYMesaj() {
-    // Kullanıcı için "Koordinatlar (2, 2)" mesajını izlemek için bir state'in olması gerekli değildir.
-    // Koordinatları almak için yukarıdaki "getXY" helperını ve ardından "getXYMesaj"ı kullanabilirsiniz.
-    // tamamen oluşturulmuş stringi döndürür.
+  function getXYMesaj(cbfGetXY) {
+    return `Koordinatlar (${cbfGetXY})`
   }
 
   function reset() {
-    // Tüm stateleri başlangıç ​​değerlerine sıfırlamak için bu helperı kullanın.
     setCurrentIndex(initialIndex);
     setSteps(initialSteps);
+    setMessage(initialMessage);
   }
 
   function sonrakiIndex(way) {
-    // Bu helper bir yön ("sol", "yukarı", vb.) alır ve "B" nin bir sonraki indeksinin ne olduğunu hesaplar.
-    // Gridin kenarına ulaşıldığında başka gidecek yer olmadığı için,
-    // şu anki indeksi değiştirmemeli.
     if(way === "right"){
-      return !(currentIndex === 2 || currentIndex === 5 || currentIndex === 8) ? currentIndex + 1 : currentIndex;
+      if(!(currentIndex === 2 || currentIndex === 5 || currentIndex === 8)){
+        setSteps(steps + 1);
+        return  currentIndex + 1;
+      }else{
+        setMessage("You can't go right")
+        return  currentIndex;
+      }
     }else if(way === "left"){
-      return !(currentIndex === 0 || currentIndex === 3 || currentIndex === 6) ? currentIndex - 1 : currentIndex;
+      if(!(currentIndex === 0 || currentIndex === 3 || currentIndex === 6)){
+        setSteps(steps + 1);
+        return currentIndex - 1;
+      }else{
+        setMessage("You can't go left")
+        return currentIndex;
+      }
     }else if(way === "up"){
-      return !(currentIndex === 0 || currentIndex === 1 || currentIndex === 2) ? currentIndex - 3 : currentIndex;
+      if(!(currentIndex === 0 || currentIndex === 1 || currentIndex === 2)){
+        setSteps(steps + 1);
+        return  currentIndex - 3;
+      }else{
+        setMessage("You can't go up")
+        return currentIndex
+      }
     }else if(way === "down"){
-      return !(currentIndex === 6 || currentIndex === 7 || currentIndex === 8) ? currentIndex + 3 : currentIndex;
+      if(!(currentIndex === 6 || currentIndex === 7 || currentIndex === 8)){
+        setSteps(steps + 1);
+        return currentIndex + 3;
+      }else{
+        setMessage("You can't go down")
+        return currentIndex
+      }
     }
-    console.log("currentIndex:", currentIndex);
   }
 
   function ilerle(cbfSonrakiIndex) {
     setCurrentIndex(cbfSonrakiIndex)
-    setSteps(steps + 1);
-
+    
   }
 
   function onChange(evt) {
@@ -64,7 +93,7 @@ export default function AppFunctional(props) {
   return (
     <div id="wrapper" className={props.className}>
       <div className="info">
-        <h3 id="coordinates">Koordinatlar (2, 2)</h3>
+        <h3 id="coordinates">{getXYMesaj(getXY(currentIndex))}</h3>
         <h3 id="steps">{steps} kere ilerlediniz</h3>
       </div>
       <div id="grid">
@@ -77,7 +106,7 @@ export default function AppFunctional(props) {
         }
       </div>
       <div className="info">
-        <h3 id="message"></h3>
+        <h3 id="message">{message}</h3>
       </div>
       <div id="keypad">
         <button id="left" onClick={()=> ilerle(sonrakiIndex("left"))}>SOL</button>
